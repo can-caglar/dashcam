@@ -113,3 +113,6 @@ build
 
 # lock files for examples and components
 dependencies.lock
+
+# Local History for Visual Studio Code
+.history/
