@@ -1,0 +1,36 @@
+== High level use scenario ==
+
+Note: 4 buttons: ON, UP, DOWN, OKAY
+
+Summary: Device turns on either by connecting USB cable power, or holding ON button. User navigates menus with UP/DOWN and selects them with OK. Text is displayed to user on OLED screen. Device powers itself off safely. Can power it off by either holding the ON button, disconnecting USB cable power, or when battery is too low. 
+
+Detail:
+
+1. User holds ON button for more than 1 second.
+1.1 User connects USB cable
+2. Device turns ON.
+2.1. Welcome screen is displayed
+2.2 Video recording begins (red LED indicates this)
+2.3. User presses UP or DOWN buttons to navitage the menu
+2.3.1. User navigates to menu option: Connect Wifi
+2.3.1.1. Device scans WiFi and displays SSIDs found, as scrolling text on screen.
+2.3.1.2. User presses up/down to find their WiFi SSID
+2.3.1.3. User selects 'Connect to WiFi'
+2.3.1.3.1. Device tries to connect to WiFi (password from from SD card or try no password)
+2.3.1.3.1.1. Connected, display WiFi connected message.
+2.3.1.3.1.2. Can't connect, display 'Couldn't connect to WiFi' message.
+2.3.1.4. Few seconds later go back to main menu.
+2.3.2. User navitages to menu option: 'Display IP address'
+2.3.2.1 IP address scrolls on screen, or error message if no WiFi is connected
+2.3.2.2. User presses OK button and goes back to main menu.
+2.3.3. User navitages to menu option: 'Time'
+2.3.3.1 Display message 'To auto update time, connect to WiFi'
+3. User has let go of ON button by now.
+4. User pushes ON button for less than 1 second
+5. Screen turns off
+6. User pushes ON button for more than 1 second.
+6.1. User unplugs USB cable
+6.2. Battery is too low.
+8. Screen turns on and displays 'Shutting down' message.
+9. Device saves the video and shuts down safely.
+

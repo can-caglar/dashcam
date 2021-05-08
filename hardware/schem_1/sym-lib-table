@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name ov7670_conn_01x24_mountingpin)(type Legacy)(uri C:/Users/jhan.charler/Documents/Projects/hardware/hardware/kicad_lib/ov7670_conn_01x24_mountingpin.lib)(options "")(descr ""))
+)

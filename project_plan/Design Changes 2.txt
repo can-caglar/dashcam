@@ -1,0 +1,14 @@
+-------------------- Design Changes 2  (08/05/2021) ----------------
+
+The device will no longer have a back-up battery supply. The power will be provided entirely by USB.
+
+To prevent video corruption at power loss, a supercapacitor will be added to keep the device awake until it can perform a safe switch off.
+
+The reason for these changes are as follows:
+
+1. Most dashcams on the market require being plugged in to power for use. Their batteries do not last long. So customers are used to 
+plugging their dash-cams to power anyway.
+2. NiMH batteries do not do well in high temperatures, and it is too risky to have them in a car i.e. in the summer, without doing extensive 
+testing which would delay the project completion too much.
+3. Li-Ion batteries can handle high temperatures, but they are too risky to charge and may cause concern for customers.
+4. Battery placement and size was causing issues. I.e. where to put them; front has camera, back has OLED. 

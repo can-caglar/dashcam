@@ -1,0 +1,29 @@
+-------------------- Design Changes 1  (03/05/2021) ----------------
+
+After reasearching Bluetooth and Flutter, it was decided that these
+two items add too much risk to the project. The reason is due to a lack of experience designing bluetooth and mobile applications.
+
+Since this is purely software based, these features can be added at a later date with a software update.
+
+Although a bluetooth phone app would be a very neat feature on the product (push button on app, download
+image from ESP32- minimal set up) it adds far too much risk of increasing time of development.
+
+So how to display camera view to user?
+
+1. I plan to keep this feature as I think it's important to see the camera view.
+
+2. Although it would be easier to implement, I plan to avoid a large LCD to display the image as this 
+will be too expensive, make the item more attractive to thieves and drain the battery too much.
+
+3. Settled on an alternative:
+
+- Host a HTTP/HTTPS server on the ESP32 which sends camera buffer when requested.
+
+- Use SD card to configure WiFi credentials beforehand in a text file.
+
+- User will enable mobile tethering so the esp32 can join its network.
+
+- Install an OLED display to show ESP32's ip address. Note: keeping OLED as small as possible for reasons 
+mentioned in point 2.) The 128x32 displays using SSD1306 controller from BuyDisplay seem like an excellent 
+choice (~£2 each).
+
