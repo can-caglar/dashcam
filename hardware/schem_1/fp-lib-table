@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name kicad_lib)(type KiCad)(uri C:/Users/jhan.charler/Documents/Projects/hardware/hardware/kicad_lib.pretty)(options "")(descr ""))
+  (lib (name schem_1)(type KiCad)(uri ${KIPRJMOD}/schem_1.pretty)(options "")(descr ""))
+)
