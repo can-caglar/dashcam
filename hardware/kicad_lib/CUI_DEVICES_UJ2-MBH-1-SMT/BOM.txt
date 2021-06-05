@@ -1,0 +1,3 @@
+3DX_CUI_DEVICES_Supplier: CUI Devices
+3DX_CUI_DEVICES_Description: 3 µin Plating Thickness, Black Insulator, USB Receptacle
+3DX_CUI_DEVICES_Model Number: UJ2-MBH-1-SMT

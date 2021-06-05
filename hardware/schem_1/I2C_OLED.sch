@@ -185,14 +185,10 @@ Wire Wire Line
 Connection ~ 5900 3550
 Wire Wire Line
 	5900 3550 4900 3550
-Wire Wire Line
-	4900 4000 5250 4000
-Text HLabel 5250 4000 2    50   BiDi ~ 0
+Text HLabel 6355 2030 2    50   BiDi ~ 0
 SDA_OLED
-Text HLabel 5250 3850 2    50   BiDi ~ 0
+Text HLabel 6360 1890 2    50   BiDi ~ 0
 SCL_OLED
-Wire Wire Line
-	5250 3850 4900 3850
 Wire Wire Line
 	4900 3700 5275 3700
 Text Label 5075 3700 0    50   ~ 0
@@ -246,4 +242,80 @@ Wire Wire Line
 	5900 3550 6075 3550
 Connection ~ 6075 3100
 NoConn ~ 4900 3250
+$Comp
+L Device:R_Small R?
+U 1 1 60D08B52
+P 7055 4375
+AR Path="/60ABC438/60D08B52" Ref="R?"  Part="1" 
+AR Path="/61768D59/60D08B52" Ref="R9"  Part="1" 
+F 0 "R9" H 6875 4415 50  0000 L CNN
+F 1 "3.3k" H 6845 4325 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 7055 4375 50  0001 C CNN
+F 3 "~" H 7055 4375 50  0001 C CNN
+	1    7055 4375
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR?
+U 1 1 60D08B58
+P 7055 4185
+AR Path="/60ABC438/60D08B58" Ref="#PWR?"  Part="1" 
+AR Path="/61768D59/60D08B58" Ref="#PWR0101"  Part="1" 
+F 0 "#PWR0101" H 7055 4035 50  0001 C CNN
+F 1 "+3.3V" H 7070 4358 50  0000 C CNN
+F 2 "" H 7055 4185 50  0001 C CNN
+F 3 "" H 7055 4185 50  0001 C CNN
+	1    7055 4185
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7055 4475 7055 4750
+$Comp
+L Device:R_Small R?
+U 1 1 60D08B5F
+P 7155 4375
+AR Path="/60ABC438/60D08B5F" Ref="R?"  Part="1" 
+AR Path="/61768D59/60D08B5F" Ref="R10"  Part="1" 
+F 0 "R10" H 7214 4421 50  0000 L CNN
+F 1 "3.3k" H 7214 4330 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 7155 4375 50  0001 C CNN
+F 3 "~" H 7155 4375 50  0001 C CNN
+	1    7155 4375
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7155 4475 7155 4850
+Wire Wire Line
+	7055 4185 7055 4225
+Wire Wire Line
+	7155 4275 7155 4225
+Wire Wire Line
+	7155 4225 7055 4225
+Connection ~ 7055 4225
+Wire Wire Line
+	7055 4225 7055 4275
+Text Label 6135 1890 0    50   ~ 0
+SCL
+Wire Wire Line
+	6355 2030 6130 2030
+Text Label 6130 2030 0    50   ~ 0
+SDA
+Wire Wire Line
+	6360 1890 6135 1890
+Text Label 5435 3850 2    50   ~ 0
+SCL
+Text Label 5410 4000 2    50   ~ 0
+SDA
+Wire Wire Line
+	4900 4000 5410 4000
+Wire Wire Line
+	4900 3850 5435 3850
+Text Label 6905 4750 0    50   ~ 0
+SCL
+Text Label 6995 4850 0    50   ~ 0
+SDA
+Wire Wire Line
+	7155 4850 6995 4850
+Wire Wire Line
+	7055 4750 6905 4750
 $EndSCHEMATC

@@ -25,15 +25,13 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 2700 1275 
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1800 1675 1425 1675
+	1800 1675 1600 1675
 Text HLabel 1425 1575 0    50   BiDi ~ 0
 SDA_IOE
 Text HLabel 1425 1675 0    50   Input ~ 0
 SCK_IOE
 NoConn ~ 1800 2175
 NoConn ~ 1800 2275
-Wire Wire Line
-	1800 1575 1425 1575
 $Comp
 L power:+3.3V #PWR044
 U 1 1 60AC2D0A
@@ -122,7 +120,7 @@ U 1 1 60B51C32
 P 9575 2250
 F 0 "SW5" H 9575 2535 50  0000 C CNN
 F 1 "UP" H 9575 2444 50  0000 C CNN
-F 2 "Digikey:Switch_Tactile_SMD_6x6mm_PTS645" H 9575 2450 50  0001 C CNN
+F 2 "kicad_lib:JC_Switch_TL6330" H 9575 2450 50  0001 C CNN
 F 3 "~" H 9575 2450 50  0001 C CNN
 	1    9575 2250
 	1    0    0    -1  
@@ -137,7 +135,7 @@ U 1 1 60B52A31
 P 9575 2650
 F 0 "SW6" H 9575 2935 50  0000 C CNN
 F 1 "OK" H 9575 2844 50  0000 C CNN
-F 2 "Digikey:Switch_Tactile_SMD_6x6mm_PTS645" H 9575 2850 50  0001 C CNN
+F 2 "kicad_lib:JC_Switch_TL6330" H 9575 2850 50  0001 C CNN
 F 3 "~" H 9575 2850 50  0001 C CNN
 	1    9575 2650
 	1    0    0    -1  
@@ -302,9 +300,63 @@ U 1 1 60B50DAA
 P 9550 1850
 F 0 "SW4" H 9550 2135 50  0000 C CNN
 F 1 "DOWN" H 9550 2044 50  0000 C CNN
-F 2 "Digikey:Switch_Tactile_SMD_6x6mm_PTS645" H 9550 2050 50  0001 C CNN
+F 2 "kicad_lib:JC_Switch_TL6330" H 9550 2050 50  0001 C CNN
 F 3 "~" H 9550 2050 50  0001 C CNN
 	1    9550 1850
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:R_Small R28
+U 1 1 60CFBD78
+P 1500 1200
+F 0 "R28" H 1320 1240 50  0000 L CNN
+F 1 "3.3k" H 1290 1150 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 1500 1200 50  0001 C CNN
+F 3 "~" H 1500 1200 50  0001 C CNN
+	1    1500 1200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR0104
+U 1 1 60CFC6D7
+P 1500 1010
+F 0 "#PWR0104" H 1500 860 50  0001 C CNN
+F 1 "+3.3V" H 1515 1183 50  0000 C CNN
+F 2 "" H 1500 1010 50  0001 C CNN
+F 3 "" H 1500 1010 50  0001 C CNN
+	1    1500 1010
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1425 1575 1500 1575
+Wire Wire Line
+	1500 1300 1500 1575
+Connection ~ 1500 1575
+Wire Wire Line
+	1500 1575 1800 1575
+$Comp
+L Device:R_Small R29
+U 1 1 60D01229
+P 1600 1200
+F 0 "R29" H 1659 1246 50  0000 L CNN
+F 1 "3.3k" H 1659 1155 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 1600 1200 50  0001 C CNN
+F 3 "~" H 1600 1200 50  0001 C CNN
+	1    1600 1200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1600 1300 1600 1675
+Connection ~ 1600 1675
+Wire Wire Line
+	1600 1675 1425 1675
+Wire Wire Line
+	1500 1010 1500 1050
+Wire Wire Line
+	1600 1100 1600 1050
+Wire Wire Line
+	1600 1050 1500 1050
+Connection ~ 1500 1050
+Wire Wire Line
+	1500 1050 1500 1100
 $EndSCHEMATC
