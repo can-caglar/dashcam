@@ -658,31 +658,8 @@ Wire Wire Line
 	6225 6275 6225 6350
 Text Notes 2225 5575 0    79   ~ 0
 MicroSD Card
-Wire Wire Line
-	7435 7265 7435 7315
-$Comp
-L power:GND #PWR0102
-U 1 1 60D682C7
-P 7435 7315
-F 0 "#PWR0102" H 7435 7065 50  0001 C CNN
-F 1 "GND" H 7440 7142 50  0000 C CNN
-F 2 "" H 7435 7315 50  0001 C CNN
-F 3 "" H 7435 7315 50  0001 C CNN
-	1    7435 7315
-	1    0    0    -1  
-$EndComp
 NoConn ~ 10100 1225
 NoConn ~ 10100 1325
-Text Label 7635 7165 2    50   ~ 0
-U0RXD
-Text Label 7635 7065 2    50   ~ 0
-U0TXD
-Wire Wire Line
-	7635 7165 7335 7165
-Wire Wire Line
-	7635 7065 7335 7065
-Wire Wire Line
-	7335 7265 7435 7265
 $Comp
 L Mechanical:MountingHole H1
 U 1 1 60CB09A1
@@ -762,8 +739,6 @@ Wire Wire Line
 	2210 8735 2750 8735
 Wire Wire Line
 	2750 8735 2750 8680
-Wire Wire Line
-	2210 9635 2695 9635
 $Comp
 L Connector_Generic:Conn_01x24 J3
 U 1 1 60D37B99
@@ -775,8 +750,6 @@ F 3 "~" H 2010 9135 50  0001 C CNN
 	1    2010 9135
 	-1   0    0    -1  
 $EndComp
-Text Label 2695 9635 2    50   ~ 0
-CAM_PWR
 Connection ~ 2750 8680
 Wire Wire Line
 	2750 8680 2750 8635
@@ -1203,7 +1176,7 @@ Connection ~ 3095 9535
 Wire Wire Line
 	2210 9735 3095 9735
 Wire Wire Line
-	3095 9535 3095 9735
+	3095 9535 3095 9635
 Connection ~ 3095 9735
 Wire Wire Line
 	2210 9835 3095 9835
@@ -1259,10 +1232,6 @@ Wire Wire Line
 	4485 8710 5025 8710
 Wire Wire Line
 	5025 8710 5025 8655
-Wire Wire Line
-	4485 9610 4970 9610
-Text Label 4970 9610 2    50   ~ 0
-CAM_PWR
 Connection ~ 5025 8655
 Wire Wire Line
 	5025 8655 5025 8610
@@ -1338,7 +1307,7 @@ Connection ~ 5370 9510
 Wire Wire Line
 	4485 9710 5370 9710
 Wire Wire Line
-	5370 9510 5370 9710
+	5370 9510 5370 9610
 Connection ~ 5370 9710
 Wire Wire Line
 	4485 9810 5370 9810
@@ -1367,6 +1336,13 @@ Wire Wire Line
 Connection ~ 5370 10310
 Wire Wire Line
 	5370 10310 5370 10490
+Wire Wire Line
+	6800 2300 6335 2300
+Connection ~ 6800 2300
+Wire Wire Line
+	7335 6965 7635 6965
+Text Label 7390 6965 0    50   ~ 0
+5V_USB_SC
 $Comp
 L BG300-04-X-X-A_REVC:BG300-04-X-X-A_REVC J4
 U 1 1 60BF46D9
@@ -1379,11 +1355,37 @@ F 4 "GCT" H 7035 7065 50  0001 L BNN "MANUFACTURER"
 	1    7035 7065
 	-1   0    0    1   
 $EndComp
-Text Label 7390 6965 0    50   ~ 0
-5V_USB_SC
 Wire Wire Line
-	7335 6965 7635 6965
+	7335 7265 7435 7265
 Wire Wire Line
-	6800 2300 6335 2300
-Connection ~ 6800 2300
+	7635 7065 7335 7065
+Wire Wire Line
+	7635 7165 7335 7165
+Text Label 7635 7065 2    50   ~ 0
+U0TXD
+Text Label 7635 7165 2    50   ~ 0
+U0RXD
+$Comp
+L power:GND #PWR0102
+U 1 1 60D682C7
+P 7435 7315
+F 0 "#PWR0102" H 7435 7065 50  0001 C CNN
+F 1 "GND" H 7440 7142 50  0000 C CNN
+F 2 "" H 7435 7315 50  0001 C CNN
+F 3 "" H 7435 7315 50  0001 C CNN
+	1    7435 7315
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7435 7265 7435 7315
+Wire Wire Line
+	2210 9635 3095 9635
+Connection ~ 3095 9635
+Wire Wire Line
+	3095 9635 3095 9735
+Wire Wire Line
+	4485 9610 5370 9610
+Connection ~ 5370 9610
+Wire Wire Line
+	5370 9610 5370 9710
 $EndSCHEMATC
