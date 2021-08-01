@@ -5,17 +5,17 @@ This is the development repo for a low-cost, dash-cam hobby project.
 
 Features:
 
-1- Small size (34 x 34 x 34 cm)
+1. Small size (34 x 34 x 34 cm)
 
-2- Saves videos to AVI format (motion JPEG).
+2. Saves videos to AVI format (motion JPEG).
 
-3- Powered by a USB mini.
+3. Powered through a USB mini cable.
 
-4- Connects to WiFi, ideally to a phone hotspot, after which the video will be streamed to a local server that we driver can see. This is to help position the camera.
+4. Can connect to WiFi. The idea is to connect it to your phone hotspot, after which the video will be streamed to a local server that the driver can access on their phone's internet browser. This is to help the driver position the camera by seeing what the camera is seing.
 
-5- Small OLED screen and 3 buttons for the UI. OLED will show the device IP address, and show nearby WiFi access points.
+5. Small OLED screen and 3 buttons for the UI. OLED will show the device IP address for the video streaming server, and show nearby WiFi access points.
 
-6. Inexpensive looking- will not encourage thieves!
+6. Inexpensive looking (due to very small design). Will not encourage thieves!
 
 7. Has a supercapacitor which keeps power active for ~ 1 second after power is cut, this means videos will never be corrupt.
 
