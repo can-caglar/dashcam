@@ -66,8 +66,10 @@ More details can be found in [Project_planning.xlsx](https://github.com/jhanchar
 <img src="images/where_it_will_fit.png" >
 
 
-**PCB view (KiCAD files for the project can be found [here]**(https://github.com/jhancharler/dashcam/tree/master/hardware/schem_1)):
-<img src="images/spin_1_pcb.PNG" >
+**PCB view** 
+
+*KiCAD files for the project can be found [here](https://github.com/jhancharler/dashcam/tree/master/hardware/schem_1)):
+<img src="images/spin_1_pcb.PNG" >*
 
 ## Progress log
 
