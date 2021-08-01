@@ -6,13 +6,21 @@ This is the development repo for a low-cost, dash-cam hobby project.
 Features:
 
 1- Small size (34 x 34 x 34 cm)
+
 2- Saves videos to AVI format (motion JPEG).
+
 3- Powered by a USB mini.
+
 4- Connects to WiFi, ideally to a phone hotspot, after which the video will be streamed to a local server that we driver can see. This is to help position the camera.
+
 5- Small OLED screen and 3 buttons for the UI. OLED will show the device IP address, and show nearby WiFi access points.
+
 6. Inexpensive looking- will not encourage thieves!
+
 7. Has a supercapacitor which keeps power active for ~ 1 second after power is cut, this means videos will never be corrupt.
+
 8. SD card slot which overrides oldest videos, so the device will never run out of memory. 
+
 9. It's a cube! The x, y and z dimentions have been distributed equally so it takes up as little space from the driver's perspective as possible.
 
 ## Latest update:
@@ -26,6 +34,7 @@ Features:
 - OLED library allows scrolling text, so long messages, i.e. IP address of device can be shown easily. 
 
 **Hardware**
+
 PCB spin 1 has arrived and components have been soldered.
 
 The ESP32 can be programmed and can run a basic "hello world" script without issues.
@@ -36,35 +45,33 @@ More details can be found in [Project_planning.xlsx](https://github.com/jhanchar
 
 ## Images:
 
-**Top 3D model:**
-<img src="images/front_step.PNG" >
 
-**Top actual image:**
+**Top-side images:**
+<img src="images/front_step.PNG" >
 <img src="images/top_view_edited.png" >
 
 
-**Back 3D model image:**
+**Back images:**
 <img src="images/back_step.PNG" >
-
-**Back actual image:**
 <img src="images/bottom_view_edited.png" >
 
-** Upright images: **
+
+**Upright images:**
 <img src="images/back_view_edited.png">
 <img src="images/side_view.jpeg">
 <img src="images/front_view_edited.jpeg">
 
-**In-car concept**
 
+**In-car concept**
 <img src="images/where_it_will_fit.png" >
 
-**PCB view (KiCAD files for the project can be found [here]**(https://github.com/jhancharler/dashcam/tree/master/hardware/schem_1)):
 
+**PCB view (KiCAD files for the project can be found [here]**(https://github.com/jhancharler/dashcam/tree/master/hardware/schem_1)):
 <img src="images/spin_1_pcb.PNG" >
 
-## Progress
+## Progress log
 
-To see a more detailed plan, go to the /project_plan folder for various plan documents.
+To see the progress log and design decisions, go to the /project_plan folder to see the various plan documents.
 
 ## Installation
 
