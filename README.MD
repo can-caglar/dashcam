@@ -3,7 +3,7 @@
 
 This is the development repo for a low-cost, dash-cam hobby project.
 
-Features:
+**Features:**
 
 1. Small size (34 x 34 x 34 cm)
 
@@ -67,7 +67,6 @@ More details can be found in [Project_planning.xlsx](https://github.com/jhanchar
 
 
 **PCB view** 
-
 *KiCAD files for the project can be found [here](https://github.com/jhancharler/dashcam/tree/master/hardware/schem_1)):
 <img src="images/spin_1_pcb.PNG" >*
 
