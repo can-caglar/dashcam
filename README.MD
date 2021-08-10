@@ -62,7 +62,8 @@ More details can be found in [Project_planning.xlsx](https://github.com/jhanchar
 <img src="images/front_view_edited.jpeg">
 
 
-**In-car concept**
+**In-car concept:**
+
 <img src="images/where_it_will_fit.png" >
 
 
