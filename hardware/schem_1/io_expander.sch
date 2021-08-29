@@ -17,8 +17,8 @@ $Comp
 L Interface_Expansion:MCP23017_SO U8
 U 1 1 60ABCEFB
 P 2500 2375
-F 0 "U8" H 2025 3500 50  0000 C CNN
-F 1 "MCP23017_SO" H 2050 3400 50  0000 C CNN
+F 0 "U8" H 2100 3430 50  0000 C CNN
+F 1 "MCP23017_SO" H 2090 3330 50  0000 C CNN
 F 2 "Package_SO:SOIC-28W_7.5x17.9mm_P1.27mm" H 2700 1375 50  0001 L CNN
 F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 2700 1275 50  0001 L CNN
 F 4 "C47023" H 2500 2375 50  0001 C CNN "LCSC"
@@ -57,7 +57,7 @@ F 4 "C125931" H 1400 2325 50  0001 C CNN "LCSC"
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1800 2475 1400 2475
+	1800 2475 1575 2475
 Wire Wire Line
 	1400 2475 1400 2425
 $Comp
@@ -238,7 +238,7 @@ USB detection
 Text Notes 6050 3500 0    50   ~ 0
 Input high voltage = 0.25*Vdd + 0.8\nLow voltage = 0.15Vdd\n\nSo, 0.25*3.3 + 0.8 = 1.625V.\nFor logic 1:\n3.3V > In voltage > 1.625V 
 Wire Wire Line
-	6225 2000 6850 2000
+	6225 2000 6630 2000
 Text Notes 8900 3225 0    50   ~ 0
 If a pin configured as input and pullup pin is set,\nit is pulled up with a 100k resistor
 $Comp
@@ -258,7 +258,7 @@ L Device:R_Small R25
 U 1 1 60BD35C8
 P 4100 2875
 F 0 "R25" H 4159 2921 50  0000 L CNN
-F 1 "220" H 4159 2830 50  0000 L CNN
+F 1 "470" H 4159 2830 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4100 2875 50  0001 C CNN
 F 3 "~" H 4100 2875 50  0001 C CNN
 F 4 "C22962" H 4100 2875 50  0001 C CNN "LCSC"
@@ -367,4 +367,32 @@ Wire Wire Line
 Connection ~ 1500 1050
 Wire Wire Line
 	1500 1050 1500 1100
+$Comp
+L Connector:TestPoint TP401
+U 1 1 61459396
+P 6630 2000
+F 0 "TP401" H 6575 2055 50  0000 R CNN
+F 1 "TestPoint" H 6572 2117 50  0000 R CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 6830 2000 50  0001 C CNN
+F 3 "~" H 6830 2000 50  0001 C CNN
+	1    6630 2000
+	-1   0    0    1   
+$EndComp
+Connection ~ 6630 2000
+Wire Wire Line
+	6630 2000 6850 2000
+$Comp
+L Connector:TestPoint TP402
+U 1 1 614C2D87
+P 1575 2475
+F 0 "TP402" H 1520 2530 50  0000 R CNN
+F 1 "TestPoint" H 1517 2592 50  0000 R CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 1775 2475 50  0001 C CNN
+F 3 "~" H 1775 2475 50  0001 C CNN
+	1    1575 2475
+	-1   0    0    1   
+$EndComp
+Connection ~ 1575 2475
+Wire Wire Line
+	1575 2475 1400 2475
 $EndSCHEMATC
