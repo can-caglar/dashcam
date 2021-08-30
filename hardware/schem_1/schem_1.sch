@@ -727,29 +727,6 @@ F 4 "DNF" H 14115 7254 50  0000 L CNN "DNF"
 $EndComp
 Text Label 6335 2300 0    50   ~ 0
 5V_USB_SC
-Text Label 1865 8565 2    50   ~ 0
-5V_USB_SC
-Wire Wire Line
-	1430 8465 1860 8465
-Text Label 1860 8465 2    50   ~ 0
-5V_USB_SC
-Text Label 1750 9365 2    50   ~ 0
-SDA
-Text Label 1760 9165 2    50   ~ 0
-SCL
-$Comp
-L power:GND #PWR0106
-U 1 1 60E565E8
-P 2300 9500
-F 0 "#PWR0106" H 2300 9250 50  0001 C CNN
-F 1 "GND" H 2305 9327 50  0000 C CNN
-F 2 "" H 2300 9500 50  0001 C CNN
-F 3 "" H 2300 9500 50  0001 C CNN
-	1    2300 9500
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	1430 8565 1865 8565
 Text Label 4850 1750 0    50   ~ 0
 SCL
 Wire Wire Line
@@ -1025,54 +1002,6 @@ Wire Wire Line
 Wire Wire Line
 	3350 1650 2900 1650
 $Comp
-L Mechanical:MountingHole H5
-U 1 1 612159A3
-P 12950 8345
-F 0 "H5" H 13050 8436 50  0000 L CNN
-F 1 "MountingHole" H 13050 8345 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2mm" H 12950 8345 50  0001 C CNN
-F 3 "~" H 12950 8345 50  0001 C CNN
-F 4 "DNF" H 13050 8254 50  0000 L CNN "DNF"
-	1    12950 8345
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H6
-U 1 1 61215EE2
-P 13950 8345
-F 0 "H6" H 14050 8436 50  0000 L CNN
-F 1 "MountingHole" H 14050 8345 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2mm" H 13950 8345 50  0001 C CNN
-F 3 "~" H 13950 8345 50  0001 C CNN
-F 4 "DNF" H 14050 8254 50  0000 L CNN "DNF"
-	1    13950 8345
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H7
-U 1 1 61215EED
-P 12950 8895
-F 0 "H7" H 13050 8986 50  0000 L CNN
-F 1 "MountingHole" H 13050 8895 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2mm" H 12950 8895 50  0001 C CNN
-F 3 "~" H 12950 8895 50  0001 C CNN
-F 4 "DNF" H 13050 8804 50  0000 L CNN "DNF"
-	1    12950 8895
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H8
-U 1 1 61215EF8
-P 13950 8945
-F 0 "H8" H 14050 9036 50  0000 L CNN
-F 1 "MountingHole" H 14050 8945 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2mm" H 13950 8945 50  0001 C CNN
-F 3 "~" H 13950 8945 50  0001 C CNN
-F 4 "DNF" H 14050 8854 50  0000 L CNN "DNF"
-	1    13950 8945
-	1    0    0    -1  
-$EndComp
-$Comp
 L jclib:ESP32-WROVER-E-JC U1
 U 1 1 616E7DD7
 P 3950 2550
@@ -1095,10 +1024,6 @@ Wire Wire Line
 	4550 2750 5005 2750
 Wire Wire Line
 	4550 2850 4995 2850
-Wire Wire Line
-	1760 9165 1430 9165
-Wire Wire Line
-	1430 9365 1750 9365
 Wire Wire Line
 	6800 2300 6335 2300
 Connection ~ 6800 2300
@@ -1157,153 +1082,6 @@ F 3 "~" H 14155 5280 50  0001 C CNN
 	1    14155 5280
 	0    1    1    0   
 $EndComp
-$Comp
-L Connector_Generic:Conn_01x12 J3
-U 1 1 612D81CF
-P 1230 8965
-F 0 "J3" H 1148 8140 50  0000 C CNN
-F 1 "Front_PCB_Connector" H 1148 8231 50  0000 C CNN
-F 2 "Connector_Hirose:Hirose_DF3EA-12P-2H_1x12-1MP_P2.00mm_Horizontal" H 1230 8965 50  0001 C CNN
-F 3 "~" H 1230 8965 50  0001 C CNN
-	1    1230 8965
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	1970 8810 1970 8765
-Connection ~ 1970 8810
-Wire Wire Line
-	1970 8865 1970 8810
-Wire Wire Line
-	1430 8865 1970 8865
-$Comp
-L power:+3V3 #PWR0105
-U 1 1 60D9B54C
-P 1970 8810
-F 0 "#PWR0105" H 1970 8660 50  0001 C CNN
-F 1 "+3V3" V 2055 8695 50  0000 C CNN
-F 2 "" H 1970 8810 50  0001 C CNN
-F 3 "" H 1970 8810 50  0001 C CNN
-	1    1970 8810
-	0    1    -1   0   
-$EndComp
-Wire Wire Line
-	1430 8765 1970 8765
-Wire Wire Line
-	1430 8365 2300 8365
-Wire Wire Line
-	2300 8365 2300 8665
-Wire Wire Line
-	1430 8665 2300 8665
-Connection ~ 2300 8665
-Wire Wire Line
-	2300 8665 2300 8965
-Wire Wire Line
-	1430 8965 2300 8965
-Connection ~ 2300 8965
-Wire Wire Line
-	2300 8965 2300 9065
-Wire Wire Line
-	1430 9065 2300 9065
-Connection ~ 2300 9065
-Wire Wire Line
-	2300 9065 2300 9265
-Wire Wire Line
-	1430 9265 2300 9265
-Connection ~ 2300 9265
-Wire Wire Line
-	2300 9265 2300 9465
-Wire Wire Line
-	1430 9465 2300 9465
-Connection ~ 2300 9465
-Wire Wire Line
-	2300 9465 2300 9500
-Text Label 4160 8580 2    50   ~ 0
-5V_USB_SC
-Wire Wire Line
-	3725 8480 4155 8480
-Text Label 4155 8480 2    50   ~ 0
-5V_USB_SC
-Text Label 4045 9380 2    50   ~ 0
-SDA
-Text Label 4055 9180 2    50   ~ 0
-SCL
-$Comp
-L power:GND #PWR0107
-U 1 1 613BBE4D
-P 4595 9515
-F 0 "#PWR0107" H 4595 9265 50  0001 C CNN
-F 1 "GND" H 4600 9342 50  0000 C CNN
-F 2 "" H 4595 9515 50  0001 C CNN
-F 3 "" H 4595 9515 50  0001 C CNN
-	1    4595 9515
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	3725 8580 4160 8580
-Wire Wire Line
-	4055 9180 3725 9180
-Wire Wire Line
-	3725 9380 4045 9380
-$Comp
-L Connector_Generic:Conn_01x12 J6
-U 1 1 613BBE5A
-P 3525 8880
-F 0 "J6" H 3443 9597 50  0000 C CNN
-F 1 "BACK_PCB_CONNECTOR" H 3443 9506 50  0000 C CNN
-F 2 "Connector_Hirose:Hirose_DF3EA-12P-2H_1x12-1MP_P2.00mm_Horizontal" H 3525 8880 50  0001 C CNN
-F 3 "~" H 3525 8880 50  0001 C CNN
-	1    3525 8880
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	4265 8825 4265 8780
-Connection ~ 4265 8825
-Wire Wire Line
-	4265 8880 4265 8825
-Wire Wire Line
-	3725 8880 4265 8880
-$Comp
-L power:+3V3 #PWR0108
-U 1 1 613BBE68
-P 4265 8825
-F 0 "#PWR0108" H 4265 8675 50  0001 C CNN
-F 1 "+3V3" V 4350 8710 50  0000 C CNN
-F 2 "" H 4265 8825 50  0001 C CNN
-F 3 "" H 4265 8825 50  0001 C CNN
-	1    4265 8825
-	0    1    -1   0   
-$EndComp
-Wire Wire Line
-	3725 8780 4265 8780
-Wire Wire Line
-	3725 8380 4595 8380
-Wire Wire Line
-	4595 8380 4595 8680
-Wire Wire Line
-	3725 8680 4595 8680
-Connection ~ 4595 8680
-Wire Wire Line
-	4595 8680 4595 8980
-Wire Wire Line
-	3725 8980 4595 8980
-Connection ~ 4595 8980
-Wire Wire Line
-	4595 8980 4595 9080
-Wire Wire Line
-	3725 9080 4595 9080
-Connection ~ 4595 9080
-Wire Wire Line
-	4595 9080 4595 9280
-Wire Wire Line
-	3725 9280 4595 9280
-Connection ~ 4595 9280
-Wire Wire Line
-	4595 9280 4595 9480
-Wire Wire Line
-	3725 9480 4595 9480
-Connection ~ 4595 9480
-Wire Wire Line
-	4595 9480 4595 9515
 Wire Wire Line
 	7335 7065 7600 7065
 Wire Wire Line

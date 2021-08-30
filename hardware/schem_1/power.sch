@@ -19,17 +19,6 @@ Text Notes 825  1925 0    50   ~ 0
 Supercapacitor charged from USB input. \nAssume 5V input, Vr = 4.8V due to drop across Schottky diode.\nCurrent through 24R resistor at 4.8V = 200mA (300mA spare for rest of circuit).\nCapacitance = 0.47F\nt = CV/I\n\nTime to keep circuit alive:\nLDO = 0.3V dropout worst case at 500mA, so regulates until 3.3+0.3 =  3.6V\nCurrent required by circuit is roughly 250mA, assume 300mA in this calculation for 'worst case'.\nVoltage provided to LDO = 4.6V max (due to second Schottky)\ndV = 4.6-3.6 = 1V\nt = (1 * 0.47) / 0.3\nt = 1.57 seconds to safely shut down circuit.
 Text Notes 2175 5150 0    50   ~ 0
 5V in from USB, drop to 3V3 for ESP32. Then to 2.8V and 1.2V for camera. \nWhen USB is disconnected, supercapacitor provides power for device to safely shut down.
-$Comp
-L Device:CP C2
-U 1 1 60B50AAA
-P 3425 4150
-F 0 "C2" H 3543 4196 50  0000 L CNN
-F 1 "DGH105Q5R5" H 3543 4105 50  0000 L CNN
-F 2 "kicad_lib:DGH105Q5R5-Horizontal" H 3463 4000 50  0001 C CNN
-F 3 "~" H 3425 4150 50  0001 C CNN
-	1    3425 4150
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3425 3925 3425 4000
 Wire Wire Line
@@ -574,19 +563,6 @@ Wire Wire Line
 Wire Wire Line
 	4025 3925 4025 3575
 $Comp
-L power:GND #PWR?
-U 1 1 6169C4F6
-P 3425 4300
-AR Path="/6169C4F6" Ref="#PWR?"  Part="1" 
-AR Path="/616783E5/6169C4F6" Ref="#PWR035"  Part="1" 
-F 0 "#PWR035" H 3425 4050 50  0001 C CNN
-F 1 "GND" H 3430 4127 50  0000 C CNN
-F 2 "" H 3425 4300 50  0001 C CNN
-F 3 "" H 3425 4300 50  0001 C CNN
-	1    3425 4300
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:D_Schottky D?
 U 1 1 6169C502
 P 4025 3425
@@ -612,7 +588,6 @@ F 3 "~" H 3425 3450 50  0001 C CNN
 	1    3425 3450
 	0    -1   -1   0   
 $EndComp
-Connection ~ 3425 3175
 Wire Wire Line
 	3425 3925 4025 3925
 $Comp
@@ -633,9 +608,6 @@ Wire Wire Line
 Wire Wire Line
 	3425 3825 3425 3925
 Connection ~ 3425 3925
-Wire Wire Line
-	3425 3175 3585 3175
-Connection ~ 4025 3175
 $Comp
 L power:GND #PWR?
 U 1 1 6169C522
@@ -744,21 +716,6 @@ Wire Wire Line
 Wire Wire Line
 	4025 3175 4450 3175
 $Comp
-L Device:D_Schottky D?
-U 1 1 6144E2D6
-P 3735 3175
-AR Path="/6144E2D6" Ref="D?"  Part="1" 
-AR Path="/616783E5/6144E2D6" Ref="D201"  Part="1" 
-F 0 "D201" H 3740 3090 50  0000 C CNN
-F 1 "PMEG2005EGWX" H 3715 2995 50  0000 C CNN
-F 2 "Diode_SMD:D_SOD-123" H 3735 3175 50  0001 C CNN
-F 3 "~" H 3735 3175 50  0001 C CNN
-	1    3735 3175
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	3885 3175 4025 3175
-$Comp
 L Connector:TestPoint TP201
 U 1 1 61453204
 P 3160 3175
@@ -841,4 +798,47 @@ Wire Wire Line
 Connection ~ 8050 4130
 Wire Wire Line
 	8050 4130 8050 4075
+$Comp
+L power:GND #PWR?
+U 1 1 6169C4F6
+P 3425 4300
+AR Path="/6169C4F6" Ref="#PWR?"  Part="1" 
+AR Path="/616783E5/6169C4F6" Ref="#PWR035"  Part="1" 
+F 0 "#PWR035" H 3425 4050 50  0001 C CNN
+F 1 "GND" H 3430 4127 50  0000 C CNN
+F 2 "" H 3425 4300 50  0001 C CNN
+F 3 "" H 3425 4300 50  0001 C CNN
+	1    3425 4300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C2
+U 1 1 60B50AAA
+P 3425 4150
+F 0 "C2" H 3543 4196 50  0000 L CNN
+F 1 "DGH105Q5R5" H 3543 4105 50  0000 L CNN
+F 2 "kicad_lib:DGH105Q5R5-Horizontal" H 3463 4000 50  0001 C CNN
+F 3 "~" H 3425 4150 50  0001 C CNN
+	1    3425 4150
+	1    0    0    -1  
+$EndComp
+Connection ~ 4025 3175
+Wire Wire Line
+	3885 3175 4025 3175
+Connection ~ 3425 3175
+Wire Wire Line
+	3425 3175 3585 3175
+$Comp
+L Device:D_Schottky D?
+U 1 1 6144E2D6
+P 3735 3175
+AR Path="/6144E2D6" Ref="D?"  Part="1" 
+AR Path="/616783E5/6144E2D6" Ref="D201"  Part="1" 
+F 0 "D201" H 3740 3090 50  0000 C CNN
+F 1 "PMEG2005EGWX" H 3715 2995 50  0000 C CNN
+F 2 "Diode_SMD:D_SOD-123" H 3735 3175 50  0001 C CNN
+F 3 "~" H 3735 3175 50  0001 C CNN
+	1    3735 3175
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
