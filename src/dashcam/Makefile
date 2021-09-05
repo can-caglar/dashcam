@@ -3,6 +3,6 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := dash_cam
+PROJECT_NAME := dashcam
 
 include $(IDF_PATH)/make/project.mk
