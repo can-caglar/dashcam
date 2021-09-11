@@ -1,155 +1,224 @@
-/**
- * This example takes a picture every 5s and print its size on serial monitor.
- */
-
-// =============================== SETUP ======================================
-
-// 1. Board setup (Uncomment):
-// #define BOARD_WROVER_KIT
-#define BOARD_ESP32CAM_AITHINKER
-
-/**
- * 2. Kconfig setup
- * 
- * If you have a Kconfig file, copy the content from
- *  https://github.com/espressif/esp32-camera/blob/master/Kconfig into it.
- * In case you haven't, copy and paste this Kconfig file inside the src directory.
- * This Kconfig file has definitions that allows more control over the camera and
- * how it will be initialized.
- */
-
-/**
- * 3. Enable PSRAM on sdkconfig:
- * 
- * CONFIG_ESP32_SPIRAM_SUPPORT=y
- * 
- * More info on
- * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#config-esp32-spiram-support
- */
-
-// ================================ CODE ======================================
-
-#include <esp_log.h>
-#include <esp_system.h>
-#include <nvs_flash.h>
-#include <sys/param.h>
-#include <string.h>
-
+/* Hello World Example
+   This example code is in the Public Domain (or CC0 licensed, at your option.)
+   Unless required by applicable law or agreed to in writing, this
+   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+   CONDITIONS OF ANY KIND, either express or implied.
+*/
+#include <stdio.h>
+#include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_spi_flash.h"
+#include "esp_log.h"
+#include "driver/i2c.h"
+#include "esp_err.h"
+#include "memory.h"
 
-#include "esp_camera.h"
+#define SDA GPIO_NUM_3
+#define SCL GPIO_NUM_16 
+#define I2C_MAX_CLOCK_SPEED 400000
+#define I2C_MASTER_TIMEOUT_MS 1000
 
-#define BOARD_WROVER_KIT 1
+#define IOEXPANDER_ADDR 0x20
 
-// WROVER-KIT PIN Map
-#ifdef BOARD_WROVER_KIT
+#define OPCODE_AND_RW(slave_addr, rw) ((slave_addr << 1) | (rw))
 
-#define CAM_PIN_PWDN -1  //power down is not used
-#define CAM_PIN_RESET -1 //software reset will be performed
-#define CAM_PIN_XCLK 21
-#define CAM_PIN_SIOD 26
-#define CAM_PIN_SIOC 27
+#define I2C_PORT I2C_NUM_0
 
-#define CAM_PIN_D7 35
-#define CAM_PIN_D6 34
-#define CAM_PIN_D5 39
-#define CAM_PIN_D4 36
-#define CAM_PIN_D3 19
-#define CAM_PIN_D2 18
-#define CAM_PIN_D1 5
-#define CAM_PIN_D0 4
-#define CAM_PIN_VSYNC 25
-#define CAM_PIN_HREF 23
-#define CAM_PIN_PCLK 22
+#define ACK_EN 1
+#define NACK   0
 
-#endif
+const char* TAG = "DASHCAM_MAIN";
 
-// ESP32Cam (AiThinker) PIN Map
-#ifdef BOARD_ESP32CAM_AITHINKER
+uint8_t rx_buffer[2] = {0};
 
-#define CAM_PIN_PWDN 32
-#define CAM_PIN_RESET -1 //software reset will be performed
-#define CAM_PIN_XCLK 0
-#define CAM_PIN_SIOD 26
-#define CAM_PIN_SIOC 27
+// Below is the IOCON.BANK = 0 addressing
+#define IODIRA      0x00
+#define IODIRB      0x01
+#define IPOLA       0x02
+#define IPOLB       0x03
+#define GPINTENA    0x04
+#define GPINTENB    0x05
+#define DEFVALA     0x06
+#define DEFVALB     0x07
+#define INTCONTA    0x08
+#define INTCONB     0x09
+#define IOCONA      0x0A
+#define IOCONB      0x0B
+#define GPPUA       0x0C
+#define GPPUB       0x0D
+#define INTFA       0x0E
+#define INTFB       0x0F
+#define INTCAPA     0x10
+#define INTCAPB     0x11
+#define GPIOA       0x12
+#define GPIOB       0x13
+#define OLATA       0x14
+#define OLATB       0x15
 
-#define CAM_PIN_D7 35
-#define CAM_PIN_D6 34
-#define CAM_PIN_D5 39
-#define CAM_PIN_D4 36
-#define CAM_PIN_D3 21
-#define CAM_PIN_D2 19
-#define CAM_PIN_D1 18
-#define CAM_PIN_D0 5
-#define CAM_PIN_VSYNC 25
-#define CAM_PIN_HREF 23
-#define CAM_PIN_PCLK 22
 
-#endif
-
-static const char *TAG = "example:take_picture";
-
-static camera_config_t camera_config = {
-    .pin_pwdn = CAM_PIN_PWDN,
-    .pin_reset = CAM_PIN_RESET,
-    .pin_xclk = CAM_PIN_XCLK,
-    .pin_sscb_sda = CAM_PIN_SIOD,
-    .pin_sscb_scl = CAM_PIN_SIOC,
-
-    .pin_d7 = CAM_PIN_D7,
-    .pin_d6 = CAM_PIN_D6,
-    .pin_d5 = CAM_PIN_D5,
-    .pin_d4 = CAM_PIN_D4,
-    .pin_d3 = CAM_PIN_D3,
-    .pin_d2 = CAM_PIN_D2,
-    .pin_d1 = CAM_PIN_D1,
-    .pin_d0 = CAM_PIN_D0,
-    .pin_vsync = CAM_PIN_VSYNC,
-    .pin_href = CAM_PIN_HREF,
-    .pin_pclk = CAM_PIN_PCLK,
-
-    //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,
-    .ledc_timer = LEDC_TIMER_0,
-    .ledc_channel = LEDC_CHANNEL_0,
-
-    .pixel_format = PIXFORMAT_RGB565, //YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_QVGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-
-    .jpeg_quality = 12, //0-63 lower number means higher quality
-    .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
-    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
-};
-
-static esp_err_t init_camera()
+esp_err_t i2c_write_slave_register(uint8_t addr, uint8_t data)
 {
-    //initialize the camera
-    esp_err_t err = esp_camera_init(&camera_config);
-    if (err != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Camera Init Failed");
-        return err;
-    }
+    i2c_cmd_handle_t cmd;
+    esp_err_t err;
 
-    return ESP_OK;
+    // TODO: ERROR CHECKING for input params
+
+    ESP_LOGI(TAG, "Writing to register [%2x]", addr);
+
+     // 1. CMD link  
+    cmd = i2c_cmd_link_create();
+
+    // 2. Start bit
+    err = i2c_master_start(cmd);
+    if (err) goto exit;
+
+    //3. OP (opcode + read/write) - requires an ACK
+    err = i2c_master_write_byte(cmd, OPCODE_AND_RW(IOEXPANDER_ADDR, I2C_MASTER_WRITE), ACK_EN);
+    if (err) goto exit;
+
+    //4. Write register address - requires an ACK
+    err = i2c_master_write_byte(cmd, addr, ACK_EN);
+    if (err) goto exit;
+
+    //5. SR condition (start stop / restart)
+    err = i2c_master_start(cmd);
+    if (err) goto exit;
+
+    //6. OP (opcode + write) - requires an ACK
+    err = i2c_master_write_byte(cmd, OPCODE_AND_RW(IOEXPANDER_ADDR, I2C_MASTER_WRITE), ACK_EN);
+    if (err) goto exit;
+
+    //7. Write 1 byte to slave register
+    err = i2c_master_write_byte(cmd, data, NACK);
+    if (err) goto exit;
+
+    //6. Stop bit
+    err = i2c_master_stop(cmd);
+    if (err) goto exit;
+
+    //7. Execute command
+    err = i2c_master_cmd_begin(I2C_PORT, cmd, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+    ESP_LOGI(TAG, "Finished writing data [%02x]", data);
+
+exit:
+
+    i2c_cmd_link_delete(cmd);
+
+    return err;
 }
 
-void app_main()
+esp_err_t i2c_read_slave_register(uint8_t addr, uint8_t* rx_buf)
 {
-    if(ESP_OK != init_camera()) {
-        return;
-    }
+    i2c_cmd_handle_t cmd;
+    esp_err_t err;
 
-    while (1)
+    // TODO: ERROR CHECKING for input params
+
+    ESP_LOGI(TAG, "Reading address [%2x]", addr);
+
+     // 1. CMD link  
+    cmd = i2c_cmd_link_create();
+
+    // 2. Start bit
+    err = i2c_master_start(cmd);
+    if (err) goto exit;
+
+    //3. OP (opcode + read/write) - requires an ACK
+    err = i2c_master_write_byte(cmd, OPCODE_AND_RW(IOEXPANDER_ADDR, I2C_MASTER_WRITE), ACK_EN);
+    if (err) goto exit;
+
+    //4. Write register address - requires an ACK
+    err = i2c_master_write_byte(cmd, addr, ACK_EN);
+    if (err) goto exit;
+
+    //5. SR condition (start stop / restart)
+    err = i2c_master_start(cmd);
+    if (err) goto exit;
+
+    //6. OP (opcode + read/write) - requires an ACK
+    err = i2c_master_write_byte(cmd, OPCODE_AND_RW (IOEXPANDER_ADDR, I2C_MASTER_READ), ACK_EN);
+    if (err) goto exit;
+
+    //7. Read x bytes from slave
+    err = i2c_master_read(cmd, &rx_buffer, sizeof(uint8_t), ACK_EN);
+    if (err) goto exit;
+
+    //6. Stop bit
+    err = i2c_master_stop(cmd);
+    if (err) goto exit;
+
+    //7. Execute command
+    err = i2c_master_cmd_begin(I2C_PORT, cmd, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+    ESP_LOGI(TAG, "Received data [%02x],[%02x]", rx_buffer[0], rx_buffer[1]);
+
+exit:
+
+    i2c_cmd_link_delete(cmd);
+
+    return err;
+}
+
+esp_err_t init_mcp23017()
+{
+    // IOCON.BANK should be 0 during boot, so 
+}
+
+void app_main(void)
+{
+    // Vars
+    i2c_config_t i2cconfig;
+    esp_err_t err;
+
+    // 1. Configuration - set the init params, master/slave GPIO pins for SDA
+    // SCL, CLK speed etc
+
+    i2cconfig.mode = I2C_MODE_MASTER;
+    i2cconfig.sda_io_num = SDA;
+    i2cconfig.scl_io_num = SCL;
+    i2cconfig.sda_pullup_en = GPIO_PULLUP_DISABLE;
+    i2cconfig.scl_pullup_en = GPIO_PULLUP_DISABLE;
+    i2cconfig.master.clk_speed = I2C_MAX_CLOCK_SPEED;
+    i2cconfig.clk_flags = 0;
+
+    ESP_ERROR_CHECK(i2c_param_config(I2C_PORT, &i2cconfig));
+
+    // 2. Install Driver- activate driver on one of two I2C controllers as mtr
+    // or slave
+
+    ESP_ERROR_CHECK(i2c_driver_install(I2C_PORT, i2cconfig.mode, 0, 0, 0));
+    
+    ESP_LOGI(TAG, "I2C initialized successfully.");
+
+    uint8_t testData = 0x55;
+    uint8_t reg = 0x00;
+
+    while(1)
     {
-        ESP_LOGI(TAG, "Taking picture...");
-        camera_fb_t *pic = esp_camera_fb_get();
+        ESP_LOGI(TAG, "Read register %02x in 3 seconds...", reg);
+        vTaskDelay(pdMS_TO_TICKS(3000));
 
-        // use pic->buf to access the image
-        ESP_LOGI(TAG, "Picture taken! Its size was: %zu bytes", pic->len);
-        esp_camera_fb_return(pic);
+        err = i2c_read_slave_register(reg, &rx_buffer);
+        if (err)
+        {
+            ESP_LOGE(TAG, "%s", esp_err_to_name(err));
+        }
 
-        vTaskDelay(5000 / portTICK_RATE_MS);
+        ESP_LOGI(TAG, "Write %02x to register %02x in 3 seconds...", testData, reg);
+        vTaskDelay(pdMS_TO_TICKS(3000));
+        err = i2c_write_slave_register(reg, testData);
+        if (err)
+        {
+            ESP_LOGE(TAG, "%s", esp_err_to_name(err));
+        }
+
+        ESP_LOGI(TAG, "Incrementing test data...\n");
+        testData++;
     }
+
+    // 7. Delete driver to release resources used by i2c drier.
+    i2c_driver_delete(I2C_PORT);
 }
