@@ -57,6 +57,10 @@ uint8_t rx_buffer[2] = {0};
 #define OLATA       0x14
 #define OLATB       0x15
 
+#define IO_EXPANDER_INPUT  1
+#define IO_EXPANDER_OUTPUT 0
+
+
 
 esp_err_t i2c_write_slave_register(uint8_t addr, uint8_t data)
 {
@@ -65,7 +69,7 @@ esp_err_t i2c_write_slave_register(uint8_t addr, uint8_t data)
 
     // TODO: ERROR CHECKING for input params
 
-    ESP_LOGI(TAG, "Writing to register [%2x]", addr);
+    ESP_LOGI(TAG, "Writing [0x%2x] to register %2x", data, addr);
 
      // 1. CMD link  
     cmd = i2c_cmd_link_create();
@@ -101,7 +105,7 @@ esp_err_t i2c_write_slave_register(uint8_t addr, uint8_t data)
     //7. Execute command
     err = i2c_master_cmd_begin(I2C_PORT, cmd, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-    ESP_LOGI(TAG, "Finished writing data [%02x]", data);
+    ESP_LOGI(TAG, "Finished writing data [0x%02x] to address %02x", data, addr);
 
 exit:
 
@@ -117,7 +121,7 @@ esp_err_t i2c_read_slave_register(uint8_t addr, uint8_t* rx_buf)
 
     // TODO: ERROR CHECKING for input params
 
-    ESP_LOGI(TAG, "Reading address [%2x]", addr);
+    ESP_LOGI(TAG, "Reading address 0x%2x", addr);
 
      // 1. CMD link  
     cmd = i2c_cmd_link_create();
@@ -153,7 +157,7 @@ esp_err_t i2c_read_slave_register(uint8_t addr, uint8_t* rx_buf)
     //7. Execute command
     err = i2c_master_cmd_begin(I2C_PORT, cmd, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-    ESP_LOGI(TAG, "Received data [%02x],[%02x]", rx_buffer[0], rx_buffer[1]);
+    ESP_LOGI(TAG, "Received data [0x%02x],[0x%02x]", rx_buffer[0], rx_buffer[1]);
 
 exit:
 
@@ -164,7 +168,29 @@ exit:
 
 esp_err_t init_mcp23017()
 {
-    // IOCON.BANK should be 0 during boot, so 
+    // Note, IOCON.BANK should be 0 during boot, so we know how the registers 
+    // will be addressed
+
+    esp_err_t err = ESP_OK;
+
+    // GPIO A7 is BUTTON OK (input)
+
+    // GPIO A6 is BUTTON UP (input)
+
+    // GPIO A5 is LED (output)
+    uint8_t iodira = 0xff;
+    err = i2c_read_slave_register(IODIRA, &iodira);
+
+    // Reset A5 pin (0 is output)
+    iodira &= ~(1<<5);
+    err = i2c_write_slave_register(IODIRA, iodira);
+
+    i2c_read_slave_register(IODIRA, &iodira);
+    ESP_LOGI(TAG, "IODIRA bank: %02x", iodira);
+    
+    // GPIO A4 is input (USB Detect)
+
+    return err;
 }
 
 void app_main(void)
@@ -193,30 +219,33 @@ void app_main(void)
     
     ESP_LOGI(TAG, "I2C initialized successfully.");
 
-    uint8_t testData = 0x55;
-    uint8_t reg = 0x00;
+    init_mcp23017();
+
+    ESP_LOGI(TAG, "MCP initialized successfully.");
+
+    uint8_t data = 0x00;
 
     while(1)
     {
-        ESP_LOGI(TAG, "Read register %02x in 3 seconds...", reg);
-        vTaskDelay(pdMS_TO_TICKS(3000));
+        // READ GPIOA bank
+        err = i2c_read_slave_register(GPIOA, &rx_buffer);
+        if (err)
+        {
+            ESP_LOGE(TAG, "%s", esp_err_to_name(err));
+        }
+        ESP_LOGI(TAG, "GPIOA port values = %02x", rx_buffer[0]);
+        
+        vTaskDelay(pdMS_TO_TICKS(150));
 
-        err = i2c_read_slave_register(reg, &rx_buffer);
+        // Write to GPIOA
+        data = rx_buffer[0] ^ (1 << 5);
+        err = i2c_write_slave_register(GPIOA, data);
         if (err)
         {
             ESP_LOGE(TAG, "%s", esp_err_to_name(err));
         }
 
-        ESP_LOGI(TAG, "Write %02x to register %02x in 3 seconds...", testData, reg);
-        vTaskDelay(pdMS_TO_TICKS(3000));
-        err = i2c_write_slave_register(reg, testData);
-        if (err)
-        {
-            ESP_LOGE(TAG, "%s", esp_err_to_name(err));
-        }
-
-        ESP_LOGI(TAG, "Incrementing test data...\n");
-        testData++;
+        vTaskDelay(pdMS_TO_TICKS(150));
     }
 
     // 7. Delete driver to release resources used by i2c drier.
