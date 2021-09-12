@@ -23,6 +23,7 @@
 #define IOEXPANDER_ADDR 0x20
 
 #define OPCODE_AND_RW(slave_addr, rw) ((slave_addr << 1) | (rw))
+#define READ_BIT(buffer, bit) ((buffer) >> (bit) & 1)
 
 #define I2C_PORT I2C_NUM_0
 
@@ -40,7 +41,7 @@ const char* TAG = "DASHCAM_MAIN";
 #define GPINTENB    0x05
 #define DEFVALA     0x06
 #define DEFVALB     0x07
-#define INTCONTA    0x08
+#define INTCONA    0x08
 #define INTCONB     0x09
 #define IOCONA      0x0A
 #define IOCONB      0x0B
@@ -63,6 +64,11 @@ const char* TAG = "DASHCAM_MAIN";
 #define BLUE_LED 5
 #define USB_DETECT 4
 
+// IOCON bits
+#define IOCON_INTPOL (1 << 1)
+#define IOCON_ODR    (1 << 2)
+
+
 enum gpio_bank
 {
     PORT_A = 0,
@@ -82,7 +88,16 @@ enum pull_up_state
   PULLUP_NOT_APPLICABLE = 2,
 };
 
+enum interrupt_trigger
+{
+    MCP_RISING = 0,
+    MCP_FALLING = 1,
+    MCP_ANY = 2,
+};
+
+// Prototypes
 esp_err_t init_gpio(enum gpio_bank bank, const uint8_t gpio_number, enum io_direction dir, enum pull_up_state pullup_en);
+esp_err_t configure_interrupt(enum gpio_bank bank, uint8_t gpio_number, enum interrupt_trigger int_trigger);
 
 esp_err_t i2c_write_slave_register(uint8_t addr, uint8_t data)
 {
@@ -142,6 +157,7 @@ esp_err_t i2c_read_slave_register(uint8_t addr, uint8_t* rx_buf)
 {
     i2c_cmd_handle_t cmd;
     esp_err_t err = ESP_OK;
+    *rx_buf = 0x00;
 
     // TODO: ERROR CHECKING for input params
 
@@ -201,6 +217,7 @@ esp_err_t init_mcp23017()
 
     // GPIO A7 is BUTTON OK (input)
     init_gpio(PORT_A, OK_BUTTON, DIR_INPUT, PULLUP_ENABLED);
+    configure_interrupt(PORT_A, OK_BUTTON, MCP_ANY);
 
     // GPIO A6 is BUTTON UP (input)
     init_gpio(PORT_A, DOWN_BUTTON, DIR_INPUT, PULLUP_ENABLED);
@@ -213,8 +230,6 @@ esp_err_t init_mcp23017()
 
     return err;
 }
-
-// esp_err_t mcp23017_init_gpio(uint8_t gpio, uint8_t dir);
 
 esp_err_t init_gpio(enum gpio_bank bank, const uint8_t gpio_number, enum io_direction dir, enum pull_up_state pullup_en)
 {
@@ -286,12 +301,12 @@ esp_err_t init_gpio(enum gpio_bank bank, const uint8_t gpio_number, enum io_dire
     return err;
 }
 
-
+// Write to a gpio pin on bank A or B. 0 will write 0 to pin. Any other number will write 1.
 esp_err_t mcp23017_write_gpio(enum gpio_bank bank, uint8_t gpio_number, uint8_t value)
 {
     uint8_t reading = 0x00;
     esp_err_t err = ESP_OK;
-    uint8_t gpio_register = GPIOA + (int)bank;
+    uint8_t gpio_register = GPIOA + (int)bank; // Write to OLATA/B if do not want to reset the interrupt pin.
 
     // Get reading of register (if bank B, the addr is GPIOA + 1)
     err = i2c_read_slave_register(gpio_register, &reading);
@@ -315,25 +330,154 @@ esp_err_t mcp23017_write_gpio(enum gpio_bank bank, uint8_t gpio_number, uint8_t 
     return err;
 }
 
-
-esp_err_t mcp23017_read_gpio(enum gpio_bank bank, uint8_t gpio_number, uint8_t* ret)
+// Reads gpio of one of the banks. Returns register value for the bank. Use READ_BIT(,) macro to read value of bit.
+esp_err_t mcp23017_read_gpio_bank(enum gpio_bank bank, uint8_t* ret)
 {
-    uint8_t reading = 0x00;
     esp_err_t err = ESP_OK;
     uint8_t gpio_address = GPIOA + (int)bank;
 
     // Get reading of register
-    err = i2c_read_slave_register(gpio_address, &reading);
+    err = i2c_read_slave_register(gpio_address, ret);
+    return err;
+}
 
-    // Print to console and store in arg 
-    *ret = (reading >> gpio_number) & 1;
-    ESP_LOGI(TAG, "GPIO %d Read Complete! Result = %x", gpio_number, *ret);
+/*
+ * Function: mcp23017_read_gpio
+ *
+ * Params: enum gpio_bank bank GPIO bank A or B to read
+ * 
+ * Return: bool Returns true for high, false for low for that gpio pin.
+ * 
+ * */
+bool mcp23017_read_gpio(enum gpio_bank bank, uint8_t gpio_number)
+{
+    // Store reading here
+    uint8_t reg = 0x00;
+
+    // Read the bank
+    mcp23017_read_gpio_bank(bank, &reg);
+
+    // Get this gpio number value
+    bool result = READ_BIT(reg, gpio_number);
+
+    // Log for debugging
+    ESP_LOGI(TAG, "GPIO %d = %x", gpio_number, result);
+    
+    return result;
+}
+
+esp_err_t disable_interrupt(enum gpio_bank bank, uint8_t gpio_number)
+{
+    ESP_LOGI(TAG, "Disabling interrupt on Bank %d, GPIO number %d", bank, gpio_number);
+
+    esp_err_t err = ESP_OK;
+    uint8_t recvbuffer = 0x00;
+
+    // Get int enable register
+    err = i2c_read_slave_register(GPINTENA + (int)bank, &recvbuffer);
+    if (err) return err;
+
+    recvbuffer &= ~ (1 << gpio_number);  // turn off interrupt
+
+    // Write to register to turn it off
+    err = i2c_write_slave_register(GPINTENA + (int)bank, recvbuffer);
+
+    ESP_LOGI(TAG, "Interrupt disabled for bank %d gpio %d!", bank, gpio_number);
+
+    return err;
+}
+
+/* Configures interrupt on mcp23017. Auto configures interrupt pin as active high.
+ *   // GPTINTEN - 1 means interrupt enabled
+ *   // DEFVAL - The default value of pin. If opposite will trigger interrupt
+ *   // INTCON - 1 means look at defval, otherwise just trigger if pin state changes (any).
+ *   // IOCON.ODR = open-drain interrupt pin. if set high, INTPOL is ignored.
+ *   // INTPOL - polarity of interrupt pin. 1 is active high, 0 active low.
+ *   // INTCAP holds value of gpio at the time interrupt occured
+ *   // INTF tells us which GPIO triggered the interrupt
+ * */
+esp_err_t configure_interrupt(enum gpio_bank bank, uint8_t gpio_number, enum interrupt_trigger int_trigger)
+{
+    ESP_LOGI(TAG, "Configuring GPIO bank %d GPIO number %d with interrupt %d", bank, gpio_number, int_trigger);
+
+    esp_err_t err = ESP_OK;
+    uint8_t recvbuffer = 0x00;
+    uint8_t intcon = 0x00;
+    uint8_t defval = 0x00;
+
+    // Check if pin is input
+    err = i2c_read_slave_register(IODIRA + (int)bank, &recvbuffer);
+    if (err) return err;
+
+    if ( ((recvbuffer > gpio_number) & 1) == IO_EXPANDER_OUTPUT)
+    {
+        ESP_LOGE(TAG, "Cannot set interrupt on an output pin (pin %d).", gpio_number);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    err = i2c_read_slave_register(GPINTENA + (int)bank, &recvbuffer);
+    if (err) return err;
+
+    err = i2c_read_slave_register(DEFVALA + (int)bank, &defval);
+    if (err) return err;
+
+    err = i2c_read_slave_register(INTCONA + (int)bank, &intcon);
+    if (err) return err;
+
+    // Enable interrupt
+    recvbuffer |= (1 << gpio_number);
+
+    // Configure interrupt comparison
+    switch(int_trigger)
+    {
+        case MCP_RISING:
+        {
+            intcon |= (1 << gpio_number); // set incon bit so int trigger based on defval
+            defval &= ~(1 << gpio_number); // clear defval bit. so default value is 0, and will trigger at logic 1.
+        }break;
+        
+        case MCP_FALLING:
+        {
+            intcon |= (1 << gpio_number); // set incon bit so int trigger based on defval
+            defval &= ~(1 << gpio_number); // set defval bit. so default value is 1, and will trigger at logic 0.
+        }break;
+
+        case MCP_ANY:
+        {
+            intcon &= ~(1 << gpio_number); // clear incon bit so int trigger on any pin
+        }break;
+        default:
+        {
+            ESP_LOGE(TAG, "Received a bad interrupt config %d", int_trigger);
+            return ESP_ERR_INVALID_ARG;
+        }break;
+    }
+
+    // Write to defval
+    err = i2c_write_slave_register(DEFVALA + (int)bank, defval);
+    if (err) return err;
+
+    // Write to intcon
+    err = i2c_write_slave_register(INTCONA + (int)bank, intcon);
+    if (err) return err;
+
+    // Write to GPINTEN
+    err = i2c_write_slave_register(GPINTENA + (int)bank, recvbuffer);
+    if (err) return err;
+
+    // Set interrupt polarity to active high
+    err = i2c_read_slave_register(IOCONA + (int)bank, &recvbuffer);
+    if (err) return err;
+
+    err = i2c_write_slave_register(IOCONA + (int)bank, recvbuffer |= IOCON_INTPOL);
+
+    ESP_LOGI(TAG, "Interrupt configured for bank %d gpio %d!", bank, gpio_number);
 
     return err;
 }
 
 
-void app_main(void)
+void app_main(void) // TODO: Interrupts + header file
 {
     // Vars
     i2c_config_t i2cconfig;
@@ -362,7 +506,7 @@ void app_main(void)
 
     ESP_LOGI(TAG, "MCP initialized successfully.");
 
-    const uint16_t delay_ms = 1000;
+    const uint16_t delay_ms = 2000;
     uint8_t data = 0x00;
 
     while(1)
@@ -378,29 +522,16 @@ void app_main(void)
         vTaskDelay(pdMS_TO_TICKS(delay_ms));
         mcp23017_write_gpio(PORT_A, BLUE_LED, 0);
 
-        // Read button OK
-        ESP_LOGI(TAG, "Will start inputs in %d seconds...", delay_ms/1000);
-        vTaskDelay(pdMS_TO_TICKS(delay_ms));
-        while (1)
-        {
-            for (int i=0; i<100; i++)
-            {
-                mcp23017_read_gpio(PORT_A, OK_BUTTON, &data);
-                ESP_LOGI(TAG, "Button OK = %hhu", data);
+        // Read GPIO bank
+        // ESP_LOGI(TAG, "Will read gpio bank A %d seconds...", delay_ms/1000);
+        // vTaskDelay(pdMS_TO_TICKS(delay_ms)); 
+        // mcp23017_read_gpio_bank(PORT_A, &data);
 
-                mcp23017_read_gpio(PORT_A, DOWN_BUTTON, &data);
-                ESP_LOGI(TAG, "Button DOWN = %hhu", data);
-
-                mcp23017_read_gpio(PORT_A, USB_DETECT, &data);
-                ESP_LOGI(TAG, "USB Detect = %hhu", data);
-
-                // Turn on blue LED based off of usb detect
-                mcp23017_write_gpio(PORT_A, BLUE_LED, data);
-
-                vTaskDelay(pdMS_TO_TICKS(250));
-            }
-            break;
-        }
+        // ESP_LOGI(TAG, "OK = %d |  DOWN = %d| USB = %d", 
+        //     READ_BIT(data, OK_BUTTON),
+        //     READ_BIT(data, DOWN_BUTTON),
+        //     READ_BIT(data, USB_DETECT));
+        
 
 
     }
